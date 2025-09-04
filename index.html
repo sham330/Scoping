@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scoping - Engineering & Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #ffffff;
+            scroll-behavior: smooth;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: #14435b;
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-brand {
+            color: #f9df60;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+
+        .nav-link:hover {
+            color: #f9df60;
+            background-color: rgba(249, 223, 96, 0.1);
+        }
+
+        .lang-switch {
+            position: relative;
+            background: linear-gradient(135deg, #f9df60, #e6c954);
+            color: #14435b;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(249, 223, 96, 0.3);
+            overflow: hidden;
+        }
+
+        .lang-switch::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .lang-switch:hover {
+            background: linear-gradient(135deg, #e6c954, #d4b749);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(249, 223, 96, 0.4);
+        }
+
+        .lang-switch:hover::before {
+            left: 100%;
+        }
+
+        .lang-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .lang-indicator::after {
+            content: '🌐';
+            font-size: 0.9rem;
+        }
+
+        .logo {
+            height: 40px;
+            width: auto;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background-color: #f9df60;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: white;
+            text-align: center;
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.5));
+            z-index: -1;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding: 0 2rem;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background-color: #f9df60;
+            color: #14435b;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(249, 223, 96, 0.3);
+        }
+
+        .btn:hover {
+            background-color: #e6c954;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(249, 223, 96, 0.4);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: #f9df60;
+            border: 2px solid #f9df60;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f9df60;
+            color: #14435b;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            color: #14435b;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* About Section */
+        .about {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="%23e0e0e0" stroke-width="1" opacity="0.3"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .about-header {
+            margin-bottom: 2rem;
+        }
+
+        .section-label {
+            display: inline-block;
+            background: linear-gradient(135deg, #14435b, #1a5570);
+            color: #f9df60;
+            font-size: 0.9rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-label::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(249, 223, 96, 0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .about-title {
+            font-size: 2.2rem;
+            color: #14435b;
+            line-height: 1.3;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .about-description {
+            color: #555;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        .about-description p {
+            margin-bottom: 1.5rem;
+        }
+
+        .services-highlight {
+            background: rgba(249, 223, 96, 0.1);
+            border-left: 4px solid #f9df60;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 10px;
+        }
+
+        .services-highlight h3 {
+            color: #14435b;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .service-category h4 {
+            color: #14435b;
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            border-bottom: 2px solid #f9df60;
+            padding-bottom: 0.3rem;
+        }
+
+        .service-category ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .service-category li {
+            position: relative;
+            padding-left: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .service-category li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #f9df60;
+            font-weight: bold;
+        }
+
+        .image-container {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .image-container:hover {
+            transform: translateY(-10px);
+        }
+
+        .about-img {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 2rem;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            gap: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #f9df60;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            display: block;
+        }
+
+        /* Our Services Section */
+        .services {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #14435b 0%, #1a5570 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .services::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><pattern id="service-grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="%23f9df60" stroke-width="1" opacity="0.1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23service-grid)"/></svg>');
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        .services-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .services-label {
+            display: inline-block;
+            background: linear-gradient(135deg, #f9df60, #e6c954);
+            color: #14435b;
+            font-size: 0.9rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .services-label::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        .services-title {
+            font-size: 2.2rem;
+            color: #ffffff;
+            line-height: 1.3;
+            font-weight: 700;
+            margin: 0;
+            margin-bottom: 1rem;
+        }
+
+        .services-description {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.8;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .services-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .service-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(249, 223, 96, 0.2);
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .service-image-container {
+            position: relative;
+            height: 250px;
+            overflow: hidden;
+        }
+
+        .service-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .service-card:hover .service-image {
+            transform: scale(1.05);
+        }
+
+        .service-image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(20, 67, 91, 0.7), rgba(26, 85, 112, 0.7));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .service-card:hover .service-image-overlay {
+            opacity: 1;
+        }
+
+        .service-icon {
+            color: #f9df60;
+            font-size: 3rem;
+            opacity: 0.9;
+        }
+
+        .service-content {
+            padding: 2rem;
+            position: relative;
+        }
+
+        .service-number {
+            position: absolute;
+            top: -25px;
+            right: 20px;
+            background: linear-gradient(135deg, #f9df60, #e6c954);
+            color: #14435b;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 4px solid white;
+            box-shadow: 0 5px 15px rgba(249, 223, 96, 0.3);
+        }
+
+        .service-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .service-title {
+            font-size: 1.4rem;
+            color: #14435b;
+            line-height: 1.3;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-text {
+            color: #555;
+            line-height: 1.7;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-features {
+            background: rgba(249, 223, 96, 0.1);
+            border-left: 4px solid #f9df60;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 10px;
+        }
+
+        .service-features h4 {
+            color: #14435b;
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .service-features ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .service-features li {
+            position: relative;
+            padding-left: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .service-features li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #f9df60;
+            font-weight: bold;
+        }
+
+        .service-link {
+            display: inline-block;
+            color: #14435b;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.8rem 2rem;
+            border: 2px solid #14435b;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #14435b, #1a5570);
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .service-link:hover {
+            color: #ffffff;
+            transform: translateX(5px);
+        }
+
+        .service-link:hover::before {
+            left: 0;
+        }
+
+        .service-link i {
+            margin-left: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .service-link:hover i {
+            transform: translateX(3px);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 70px;
+                flex-direction: column;
+                background-color: #14435b;
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                padding: 2rem 0;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .nav-menu li {
+                margin: 1rem 0;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .about-text {
+                order: 2;
+            }
+
+            .about-image {
+                order: 1;
+            }
+
+            .about-title {
+                font-size: 1.8rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .services-highlight {
+                padding: 1rem;
+            }
+
+            .services-title {
+                font-size: 1.8rem;
+            }
+
+            .services-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .service-card {
+                margin: 0;
+            }
+
+            .service-content {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-content {
+                padding: 0 1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .services-title {
+                font-size: 1.6rem;
+            }
+
+            .service-content {
+                padding: 1rem;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in-up.aos-animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* New Section: Scoping Human and Resources */
+       /* Enhanced Responsive CSS for Human and Resources Section */
+
+.human-resources {
+    background: #f8f9fa;
+    padding: 6rem 2rem 4rem;
+    color: #14435b;
+    font-weight: 400;
+}
+
+.human-resources .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.human-resources .section-label {
+    background: linear-gradient(135deg, #14435b, #1a5570);
+    color: #f9df60;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    font-size: 1rem;
+    text-align: center;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    letter-spacing: 0.1em;
+    display: flex;
+    justify-content: center;
+}
+
+.human-resources h2 {
+    font-size: 2.8rem;
+    margin-bottom: 2rem;
+    font-weight: 700;
+    color: #14435b;
+    line-height: 1.2;
+    text-align: center;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hr-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2.5rem 3rem;
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.7;
+    justify-items: start;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.hr-column {
+    background: rgba(20, 67, 91, 0.05);
+    border-radius: 14px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 10px 25px rgba(20, 67, 91, 0.07);
+    width: 100%;
+}
+
+.hr-column h3 {
+    color: #14435b;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    border-bottom: 3px solid #f9df60;
+    padding-bottom: 0.4rem;
+    letter-spacing: 0.05em;
+    font-size: 1.2rem;
+}
+
+.hr-column ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.hr-column ul li {
+    position: relative;
+    padding-left: 1.4rem;
+    margin-bottom: 0.65rem;
+    font-weight: 500;
+    color: #444;
+    font-size: 1rem;
+}
+
+.hr-column ul li::before {
+    content: "▹";
+    position: absolute;
+    left: 0;
+    color: #f9df60;
+    font-weight: 900;
+    font-size: 1rem;
+    top: 2px;
+}
+
+/* Responsive Adjustments */
+
+@media (max-width: 992px) {
+    .human-resources h2 {
+        font-size: 2.3rem;
+        padding: 0 1rem;
+    }
+    .hr-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem 2.5rem;
+        justify-items: center;
+    }
+    .hr-column {
+        padding: 1.7rem 2rem;
+        max-width: 420px;
+    }
+    .human-resources .section-label {
+        padding: 0.7rem 1.8rem;
+    }
+}
+
+@media (max-width: 680px) {
+    .human-resources {
+        padding: 4rem 1.5rem 3rem;
+    }
+    .human-resources h2 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.3;
+    }
+    .hr-grid {
+        display: flex;              /* switch to flex */
+        flex-direction: column;     /* stack vertically */
+        gap: 1.5rem;
+        justify-items: stretch;
+    }
+    .hr-column {
+        width: 100%;
+        max-width: 100%;
+        padding: 1.5rem 1.8rem;
+        background: rgba(20, 67, 91, 0.03);
+        box-shadow: 0 8px 20px rgba(20, 67, 91, 0.05);
+    }
+    .hr-column h3 {
+        border-bottom: 2px solid #f9df60;
+        font-size: 1.15rem;
+    }
+    .hr-column ul li {
+        font-size: 0.95rem;
+        padding-left: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .human-resources h2 {
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+        padding: 0 0.5rem;
+    }
+    .hr-column h3 {
+        font-size: 1.05rem;
+        margin-bottom: 1rem;
+    }
+    .hr-column ul li {
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+    }
+    .human-resources .section-label {
+        font-size: 0.9rem;
+        padding: 0.5rem 1.2rem;
+        letter-spacing: 0.08em;
+    }
+}
+
+
+/* New CTA Section */
+.cta-section {
+    background: linear-gradient(135deg, #14435b, #1a5570);
+    padding: 4rem 2rem;
+    text-align: center;
+    color: #f9df60;
+}
+
+.cta-section h2 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.cta-section p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0.85;
+    line-height: 1.6;
+}
+
+.cta-section a.btn {
+    font-size: 1.1rem;
+    padding: 1rem 3rem;
+    border-radius: 50px;
+    background-color: #f9df60;
+    color: #14435b;
+    font-weight: 700;
+    box-shadow: 0 8px 25px rgba(249, 223, 96, 0.5);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.cta-section a.btn:hover {
+    background-color: #e6c954;
+    box-shadow: 0 12px 35px rgba(230, 201, 84, 0.7);
+    transform: translateY(-4px);
+}
+
+/* Tablet (≤992px) */
+@media (max-width: 992px) {
+    .cta-section {
+        padding: 3rem 1.5rem;
+    }
+    .cta-section h2 {
+        font-size: 2.3rem;
+    }
+    .cta-section p {
+        font-size: 1.05rem;
+        max-width: 550px;
+    }
+    .cta-section a.btn {
+        font-size: 1rem;
+        padding: 0.9rem 2.5rem;
+    }
+}
+
+/* Mobile (≤680px) */
+@media (max-width: 680px) {
+    .cta-section {
+        padding: 2.5rem 1.2rem;
+    }
+    .cta-section h2 {
+        font-size: 1.9rem;
+        margin-bottom: 0.8rem;
+        line-height: 1.3;
+    }
+    .cta-section p {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+        max-width: 100%;
+    }
+    .cta-section a.btn {
+        font-size: 0.95rem;
+        padding: 0.8rem 2rem;
+        width: 100%; /* Button stretches full width on mobile */
+        max-width: 320px;
+    }
+}
+
+/* Small Mobile (≤480px) */
+@media (max-width: 480px) {
+    .cta-section {
+        padding: 2rem 1rem;
+    }
+    .cta-section h2 {
+        font-size: 1.6rem;
+    }
+    .cta-section p {
+        font-size: 0.9rem;
+    }
+    .cta-section a.btn {
+        font-size: 0.9rem;
+        padding: 0.7rem 1.6rem;
+    }
+}
+
+        /* Footer Section */
+        footer.footer {
+            background-color: #14435b;
+            color: #f9df60;
+            padding: 3rem 2rem;
+            font-size: 0.95rem;
+        }
+        footer.footer .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+        footer.footer .footer-section {
+            flex: 1 1 220px;
+            min-width: 220px;
+        }
+        footer.footer h4 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            color: #f9df60;
+            letter-spacing: 0.04em;
+        }
+        footer.footer ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        footer.footer ul li {
+            margin-bottom: 0.7rem;
+        }
+        footer.footer ul li a {
+            color: #f9df60;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        footer.footer ul li a:hover {
+            color: #e6c954;
+        }
+        footer.footer .footer-bottom {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            opacity: 0.7;
+            width: 100%;
+        }
+
+        /* Floating WhatsApp Icon */
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25d366;
+            color: #fff;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 0 8px 24px rgba(37, 211, 102, 0.5);
+            z-index: 1100;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .whatsapp-float:hover {
+            background-color: #1ebe57;
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(30, 190, 87, 0.7);
+        }
+
+        /* Scroll margin fix for fixed navbar */
+        section, footer {
+            scroll-margin-top: 75px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <img src="logo.png" alt="Scoping Logo" class="logo" onerror="this.style.display='none'" />
+                <a href="#" class="nav-brand"><span style="color: white;">SCOP</span>ING</a>
+            </div>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="#home" class="nav-link" data-en="Home" data-fr="Accueil">Home</a></li>
+                <li><a href="#about" class="nav-link" data-en="About" data-fr="À propos">About</a></li>
+                <li><a href="#services" class="nav-link" data-en="Services" data-fr="Services">Services</a></li>
+                <li><a href="#projects" class="nav-link" data-en="Projects" data-fr="Projets">Projects</a></li>
+                <li><a href="#contact" class="nav-link" data-en="Contact" data-fr="Contact">Contact</a></li>
+                <li><button class="lang-switch" onclick="toggleLanguage()" id="lang-btn">
+                    <span class="lang-indicator">EN</span>
+                </button></li>
+            </ul>
+
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="hero.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+        </video>
+        <div class="hero-overlay"></div>
+        
+        <div class="hero-content" data-aos="fade-up" data-aos-duration="1000">
+            <h1 class="hero-title" data-en="Building Tomorrow's Vision" data-fr="Construire la Vision de Demain">Building Tomorrow's Vision</h1>
+            <p class="hero-subtitle" data-en="Professional engineering and management solutions for your construction and planning needs" data-fr="Solutions d'ingénierie et de gestion professionnelles pour vos besoins de construction et de planification">Professional engineering and management solutions for your construction and planning needs</p>
+            
+            <div class="hero-buttons">
+                <a href="#about" class="btn" data-en="Learn More" data-fr="En Savoir Plus">Learn More</a>
+                <a href="#contact" class="btn btn-secondary" data-en="Get Quote" data-fr="Obtenir un Devis">Get Quote</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text" data-aos="fade-right" data-aos-duration="1000">
+                    <div class="about-header">
+                        <span class="section-label" data-en="WHO ARE WE?" data-fr="QUI SOMMES-NOUS ?">WHO ARE WE?</span>
+                        <h2 class="about-title" data-en="Your trusted partner for engineering excellence in construction" data-fr="Votre partenaire de confiance pour l'excellence en ingénierie de construction">Your trusted partner for engineering excellence in construction</h2>
+                    </div>
+                    
+                    <div class="about-description">
+                        <p data-en="Founded in 2009, Scoping is a premier engineering and management consultancy with over 15 years of experience. We are certified by international standards and have established ourselves as leaders in the construction and engineering sector." data-fr="Fondé en 2009, Scoping est un cabinet de conseil en ingénierie et gestion de premier plan avec plus de 15 ans d'expérience. Nous sommes certifiés selon les normes internationales et nous sommes établis comme leaders dans le secteur de la construction et de l'ingénierie.">Founded in 2009, Scoping is a premier engineering and management consultancy with over 15 years of experience. We are certified by international standards and have established ourselves as leaders in the construction and engineering sector.</p>
+                        
+                        <div class="services-highlight">
+                            <h3 data-en="We deliver comprehensive solutions across:" data-fr="Nous fournissons des solutions complètes dans :">We deliver comprehensive solutions across:</h3>
+                            
+                            <div class="services-grid">
+                                <div class="service-category">
+                                    <h4 data-en="Core Engineering" data-fr="Ingénierie de base">Core Engineering</h4>
+                                    <ul>
+                                        <li data-en="Residential & Commercial Buildings" data-fr="Bâtiments résidentiels et commerciaux">Residential & Commercial Buildings</li>
+                                        <li data-en="Infrastructure Development" data-fr="Développement d'infrastructure">Infrastructure Development</li>
+                                        <li data-en="Urban Planning Projects" data-fr="Projets d'urbanisme">Urban Planning Projects</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="service-category">
+                                    <h4 data-en="Specialized Works" data-fr="Travaux spécialisés">Specialized Works</h4>
+                                    <ul>
+                                        <li data-en="Industrial Structures" data-fr="Structures industrielles">Industrial Structures</li>
+                                        <li data-en="Water Treatment Systems" data-fr="Systèmes de traitement de l'eau">Water Treatment Systems</li>
+                                        <li data-en="Storage & Distribution" data-fr="Stockage et distribution">Storage & Distribution</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p data-en="Our expert team combines decades of experience with innovative approaches to deliver your construction projects with optimized costs and accelerated timelines, all within a framework of industry standards and environmental responsibility." data-fr="Notre équipe d'experts combine des décennies d'expérience avec des approches innovantes pour livrer vos projets de construction avec des coûts optimisés et des délais accélérés, le tout dans un cadre de normes industrielles et de responsabilité environnementale.">Our expert team combines decades of experience with innovative approaches to deliver your construction projects with optimized costs and accelerated timelines, all within a framework of industry standards and environmental responsibility.</p>
+                    </div>
+                </div>
+                
+                <div class="about-image" data-aos="fade-left" data-aos-duration="1000">
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?ixlib=rb-4.0.3&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&amp;auto=format&amp;fit=crop&amp;w=2070&amp;q=80" alt="Engineering Team at Work" class="about-img" />
+                        <div class="image-overlay">
+                            <div class="stats">
+                                <div class="stat">
+                                    <span class="stat-number">500+</span>
+                                    <span class="stat-label" data-en="Projects Completed" data-fr="Projets Complétés">Projects Completed</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">15+</span>
+                                    <span class="stat-label" data-en="Years Experience" data-fr="Années d'Expérience">Years Experience</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-number">50+</span>
+                                    <span class="stat-label" data-en="Expert Team Members" data-fr="Membres de l'Équipe">Expert Team Members</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   <!-- Our Services Section -->
+    <section class="services" id="services">
+        <div class="container">
+            <div class="services-header" data-aos="fade-up" data-aos-duration="1000">
+                <span class="services-label" data-en="OUR SERVICES" data-fr="NOS SERVICES">OUR SERVICES</span>
+                <h2 class="services-title" data-en="Professional engineering solutions tailored to your project needs" data-fr="Solutions d'ingénierie professionnelles adaptées aux besoins de votre projet">Professional engineering solutions tailored to your project needs</h2>
+                <p class="services-description" data-en="From initial consultation to detailed project execution, we provide comprehensive engineering and management services that ensure your construction projects are delivered on time, within budget, and to the highest quality standards." data-fr="De la consultation initiale à l'exécution détaillée du projet, nous fournissons des services d'ingénierie et de gestion complets qui garantissent que vos projets de construction sont livrés à temps, dans le budget et selon les normes de qualité les plus élevées.">From initial consultation to detailed project execution, we provide comprehensive engineering and management services that ensure your construction projects are delivered on time, within budget, and to the highest quality standards.</p>
+            </div>
+
+            <div class="services-container">
+                <!-- Service 1: Consulting, Engineering, Assistance and Supervision -->
+                <div class="service-card" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="100">
+                    <div class="service-number">01</div>
+                    <div class="service-image-container">
+                        <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Consulting and Engineering Services" class="service-image">
+                        <div class="service-image-overlay">
+                            <i class="fas fa-cogs service-icon"></i>
+                        </div>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-header">
+                            <h3 class="service-title" data-en="Consulting, Engineering, Assistance and Supervision" data-fr="Conseil, Ingénierie, Assistance et Supervision">Consulting, Engineering, Assistance and Supervision</h3>
+                        </div>
+                        <p class="service-text" data-en="Project implementation begins primarily with a well-founded study in terms of budget and technicality. This is why BET CCEC and its employees assist their clients in the success of their projects in all phases." data-fr="La mise en œuvre de projet commence principalement par une étude bien fondée en termes de budget et de technicité. C'est pourquoi BET CCEC et ses employés aident leurs clients dans le succès de leurs projets dans toutes les phases.">Project implementation begins primarily with a well-founded study in terms of budget and technicality. This is why BET CCEC and its employees assist their clients in the success of their projects in all phases.</p>
+                        
+                        <div class="service-features">
+                            <h4 data-en="Key Services Include:" data-fr="Les services clés comprennent :">Key Services Include:</h4>
+                            <ul>
+                                <li data-en="Budget analysis and cost optimization" data-fr="Analyse budgétaire et optimisation des coûts">Budget analysis and cost optimization</li>
+                                <li data-en="Technical feasibility assessments" data-fr="Évaluations de faisabilité technique">Technical feasibility assessments</li>
+                                <li data-en="Project supervision and quality control" data-fr="Supervision de projet et contrôle qualité">Project supervision and quality control</li>
+                                <li data-en="Risk management and mitigation" data-fr="Gestion et atténuation des risques">Risk management and mitigation</li>
+                            </ul>
+                        </div>
+                        
+                        <a href="#contact" class="service-link" data-en="More details" data-fr="Plus de détails">
+                            <span data-en="More details" data-fr="Plus de détails">More details</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Service 2: Summary Preliminary Project Studies (APS) -->
+                <div class="service-card" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
+                    <div class="service-number">02</div>
+                    <div class="service-image-container">
+                        <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2131&q=80" alt="Preliminary Project Studies" class="service-image">
+                        <div class="service-image-overlay">
+                            <i class="fas fa-drafting-compass service-icon"></i>
+                        </div>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-header">
+                            <h3 class="service-title" data-en="Summary Preliminary Project Studies (APS)" data-fr="Études de Projet Préliminaire Sommaire (APS)">Summary Preliminary Project Studies (APS)</h3>
+                        </div>
+                        <p class="service-text" data-en="The objectives of the preliminary design study are to specify the general composition of the construction (plan, interior volumes and exterior appearance), and to propose the technical solutions to be considered." data-fr="Les objectifs de l'étude de conception préliminaire sont de spécifier la composition générale de la construction (plan, volumes intérieurs et apparence extérieure), et de proposer les solutions techniques à considérer.">The objectives of the preliminary design study are to specify the general composition of the construction (plan, interior volumes and exterior appearance), and to propose the technical solutions to be considered.</p>
+                        
+                        <div class="service-features">
+                            <h4 data-en="Study Components:" data-fr="Composants de l'étude :">Study Components:</h4>
+                            <ul>
+                                <li data-en="Architectural layout and design concepts" data-fr="Disposition architecturale et concepts de design">Architectural layout and design concepts</li>
+                                <li data-en="Space optimization and flow analysis" data-fr="Optimisation de l'espace et analyse de flux">Space optimization and flow analysis</li>
+                                <li data-en="Exterior appearance and aesthetics" data-fr="Apparence extérieure et esthétique">Exterior appearance and aesthetics</li>
+                                <li data-en="Technical solution recommendations" data-fr="Recommandations de solutions techniques">Technical solution recommendations</li>
+                            </ul>
+                        </div>
+                        
+                        <a href="#contact" class="service-link" data-en="More details" data-fr="Plus de détails">
+                            <span data-en="More details" data-fr="Plus de détails">More details</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Service 3: Detailed Preliminary Project Studies (APD) -->
+                <div class="service-card" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300">
+                    <div class="service-number">03</div>
+                    <div class="service-image-container">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Detailed Project Studies" class="service-image">
+                        <div class="service-image-overlay">
+                            <i class="fas fa-building service-icon"></i>
+                        </div>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-header">
+                            <h3 class="service-title" data-en="Detailed Preliminary Project Studies (APD)" data-fr="Études de Projet Préliminaire Détaillé (APD)">Detailed Preliminary Project Studies (APD)</h3>
+                        </div>
+                        <p class="service-text" data-en="The preliminary design study goes further than the preliminary design study. The plans, sections, facades, and dimensions of the building are detailed, the choice of materials is determined, etc. The study also consists of defining the installations and equipment to be installed." data-fr="L'étude de conception préliminaire va plus loin que l'étude de conception préliminaire. Les plans, coupes, façades et dimensions du bâtiment sont détaillés, le choix des matériaux est déterminé, etc. L'étude consiste aussi à définir les installations et équipements à installer.">The preliminary design study goes further than the preliminary design study. The plans, sections, facades, and dimensions of the building are detailed, the choice of materials is determined, etc. The study also consists of defining the installations and equipment to be installed.</p>
+                        
+                        <div class="service-features">
+                            <h4 data-en="Detailed Specifications:" data-fr="Spécifications détaillées :">Detailed Specifications:</h4>
+                            <ul>
+                                <li data-en="Comprehensive building plans and sections" data-fr="Plans et coupes de bâtiment complets">Comprehensive building plans and sections</li>
+                                <li data-en="Material selection and specifications" data-fr="Sélection et spécifications des matériaux">Material selection and specifications</li>
+                                <li data-en="Equipment and installation planning" data-fr="Planification des équipements et installations">Equipment and installation planning</li>
+                                <li data-en="Precise dimensional requirements" data-fr="Exigences dimensionnelles précises">Precise dimensional requirements</li>
+                            </ul>
+                        </div>
+                        
+                        <a href="#contact" class="service-link" data-en="More details" data-fr="Plus de détails">
+                            <span data-en="More details" data-fr="Plus de détails">More details</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- New Section: Scoping Human and Resources -->
+    <section class="human-resources" id="human-resources" data-aos="fade-up" data-aos-duration="1000">
+        <div class="container">
+            <span class="section-label" data-en="CCEC HUMAN AND MATERIAL RESOURCES" data-fr="RESSOURCES HUMAINES ET MATÉRIELLES CCEC">SCOPING HUMAN AND MATERIAL RESOURCES</span>
+            <h2 data-en="Our professionalism, our competence and our autonomy are the guarantee of our efficiency." data-fr="Notre professionnalisme, notre compétence et notre autonomie sont la garantie de notre efficacité.">Our professionalism, our competence and our autonomy are the guarantee of our efficiency.</h2>
+            <div class="hr-grid">
+                <div class="hr-column">
+                    <h3 data-en="HUMAN RESOURCES" data-fr="RESSOURCES HUMAINES">HUMAN RESOURCES</h3>
+                    <ul>
+                        <li>02 Engineers;</li>
+                        <li>01 Projector;</li>
+                        <li>01 Designer;</li>
+                        <li>01 Administrative (Manager).</li>
+                    </ul>
+                </div>
+                <div class="hr-column">
+                    <h3 data-en="HARDWARE AND IT RESOURCES" data-fr="RESSOURCES MATÉRIELLES ET INFORMATIQUES">HARDWARE AND IT RESOURCES</h3>
+                    <ul>
+                        <li>Equipped offices and meeting room;</li>
+                        <li>02 PC workstations for word processing, management and accounting;</li>
+                        <li>Plotting table;</li>
+                        <li>Black and white and color laser printers;</li>
+                        <li>Plan printer;</li>
+                        <li>Digital photocopier;</li>
+                        <li>1 Internet station.</li>
+                    </ul>
+                </div>
+                <div class="hr-column" style="grid-column: span 2;">
+                    <h3 data-en="SOFTWARE AVERAGE" data-fr="MOYEN LOGICIEL">SOFTWARE AVERAGE</h3>
+                    <ul>
+                        <li>DALLPLAN software for formwork and reinforcement plans (1 PC workstation);</li>
+                        <li>DARCHE 2000 Software (load descent, seismic calculations, reinforced concrete modules);</li>
+                        <li>DAPILOG calculation software (beams, posts, supports, footings, slabs);</li>
+                        <li>DEFFEL 2000 Software (calculation of structures using finite elements. Static, dynamic, temporal and buckling analysis);</li>
+                        <li>OSTAAD PRO software (calculation of structures by finite elements).</li>
+                    </ul>
+                </div>
+                <div class="hr-column" style="grid-column: span 2;">
+                    <h3 data-en="STUDY POTENTIAL" data-fr="POTENTIEL D'ÉTUDE">STUDY POTENTIAL</h3>
+                    <ul>
+                        <li>Calculation atites: 300 hours/month;</li>
+                        <li>Doyang: 300 hours/month.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- New CTA Section -->
+    <section class="cta-section" data-aos="fade-up" data-aos-duration="1000">
+        <div class="container">
+            <h2 data-en="Ready to Build Your Future with Us?" data-fr="Prêt à bâtir votre avenir avec nous ?">Ready to Build Your Future with Us?</h2>
+            <p data-en="Contact Scoping today for expert engineering and management solutions tailored to your project needs. Let's transform your vision into reality with efficiency and quality." data-fr="Contactez Scoping dès aujourd'hui pour des solutions d'ingénierie et de gestion expertes adaptées aux besoins de votre projet. Transformons votre vision en réalité avec efficacité et qualité.">Contact Scoping today for expert engineering and management solutions tailored to your project needs. Let's transform your vision into reality with efficiency and quality.</p>
+            <a href="#contact" class="btn" data-en="Get a Quote" data-fr="Obtenir un Devis">Get a Quote</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-section about-footer">
+                <h4 data-en="About Scoping" data-fr="À propos de Scoping">About Scoping</h4>
+                <p data-en="A leading engineering and management consultancy since 2009, delivering excellence and innovation in construction projects worldwide." data-fr="Un cabinet de conseil en ingénierie et gestion leader depuis 2009, fournissant excellence et innovation dans les projets de construction à travers le monde.">A leading engineering and management consultancy since 2009, delivering excellence and innovation in construction projects worldwide.</p>
+            </div>
+            <div class="footer-section links-footer" role="navigation" aria-label="Footer menu">
+                <h4 data-en="Quick Links" data-fr="Liens rapides">Quick Links</h4>
+                <ul>
+                    <li><a href="#home" data-en="Home" data-fr="Accueil">Home</a></li>
+                    <li><a href="#about" data-en="About" data-fr="À propos">About</a></li>
+                    <li><a href="#services" data-en="Services" data-fr="Services">Services</a></li>
+                    <li><a href="#projects" data-en="Projects" data-fr="Projets">Projects</a></li>
+                    <li><a href="#contact" data-en="Contact" data-fr="Contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section contact-footer">
+                <h4 data-en="Contact Us" data-fr="Contactez-nous">Contact Us</h4>
+                <p><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Imm Rose11, 2éme étage,appt08,Bd Abdelkrim El khattabi, Marrakech, Maroc</p>
+                <p><i class="fas fa-phone" aria-hidden="true"></i> +212 661-902968 , +212 524 012 723</p>
+                <p><i class="fas fa-envelope" aria-hidden="true"></i> marocscoping@gmail.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom" data-en="© 2025 Scoping. All rights reserved." data-fr="© 2025 Scoping. Tous droits réservés.">
+            © 2025 Scoping. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp Icon -->
+    <a href="https://wa.me/+212661902968" target="_blank" aria-label="Chat on WhatsApp" class="whatsapp-float" title="Chat with us on WhatsApp">
+        <i class="fab fa-whatsapp" aria-hidden="true"></i>
+    </a>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Mobile menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('nav-menu');
+
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Language toggle functionality
+        let currentLang = 'en';
+
+        function toggleLanguage() {
+            const langBtn = document.getElementById('lang-btn');
+            const langIndicator = langBtn.querySelector('.lang-indicator');
+            const elements = document.querySelectorAll('[data-en][data-fr]');
+            
+            if (currentLang === 'en') {
+                currentLang = 'fr';
+                langIndicator.textContent = 'FR';
+                elements.forEach(el => {
+                    el.textContent = el.getAttribute('data-fr');
+                });
+            } else {
+                currentLang = 'en';
+                langIndicator.textContent = 'EN';
+                elements.forEach(el => {
+                    el.textContent = el.getAttribute('data-en');
+                });
+            }
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Navbar background change on scroll
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.backgroundColor = 'rgba(20, 67, 91, 0.95)';
+                navbar.style.backdropFilter = 'blur(10px)';
+            } else {
+                navbar.style.backgroundColor = '#14435b';
+                navbar.style.backdropFilter = 'none';
+            }
+        });
+
+         // Ensure video plays on all browsers
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.querySelector('.hero-video');
+            if (video) {
+                video.play().catch(e => {
+                    console.log('Autoplay prevented:', e);
+                    // Fallback: try to play when user interacts with page
+                    document.addEventListener('click', () => {
+                        video.play();
+                    }, { once: true });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
